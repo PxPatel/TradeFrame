@@ -7,13 +7,15 @@ runtime:
 
 strategy:
   name: example_slow_swing
-  target_qty: 1
+  config:
+    target_qty: 1
 
 risk:
   max_orders_per_day: 6
   max_position_notional: 5000
   daily_loss_limit: 200
   max_order_qty: 1000
+  rules: [state, kill_switch, target, symbol, market, loss, rate, exposure, duplicate]
 
 execution:
   order_type: MKT

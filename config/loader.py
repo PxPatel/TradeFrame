@@ -11,13 +11,14 @@ class AppConfig:
     mode: str
     symbols: tuple[str, ...]
     strategy_name: str
-    strategy_target_qty: int
+    strategy_config: dict[str, Any]
     database_path: str
     kill_switch_path: str
     max_orders_per_day: int
     max_position_notional: float
     daily_loss_limit: float
     max_order_qty: int
+    risk_rule_order: tuple[str, ...]
     order_type: str
     time_in_force: str
     entrust_type: str
@@ -39,13 +40,25 @@ def load_config(path: str | Path) -> AppConfig:
     symbols = tuple(_required(raw, "symbol_allowlist"))
     if not symbols or any(not isinstance(symbol, str) for symbol in symbols):
         raise ValueError("symbol_allowlist must contain at least one symbol")
+    strategy_name = _required(strategy, "name")
+    strategy_config = dict(strategy.get("config") or {})
+    if strategy_name == "example_slow_swing":
+        target_qty = strategy.get("target_qty")
+        if target_qty is not None and "target_qty" not in strategy_config:
+            strategy_config["target_qty"] = target_qty
+    strategy_config.setdefault("target_qty", 1)
+    risk_rule_order = tuple(risk.get("rules", (
+        "state", "kill_switch", "target", "symbol", "market",
+        "loss", "rate", "exposure", "duplicate",
+    )))
     config = AppConfig(
         mode=_required(raw, "mode"), symbols=symbols,
-        strategy_name=_required(strategy, "name"), strategy_target_qty=_required(strategy, "target_qty"),
+        strategy_name=strategy_name, strategy_config=strategy_config,
         database_path=_required(runtime, "database_path"), kill_switch_path=_required(runtime, "kill_switch_path"),
         max_orders_per_day=_required(risk, "max_orders_per_day"),
         max_position_notional=_required(risk, "max_position_notional"),
         daily_loss_limit=_required(risk, "daily_loss_limit"), max_order_qty=_required(risk, "max_order_qty"),
+        risk_rule_order=risk_rule_order,
         order_type=_required(execution, "order_type"), time_in_force=_required(execution, "time_in_force"),
         entrust_type=_required(execution, "entrust_type"), market=_required(broker, "market"),
         region=_required(broker, "region"), market_data_provider=_required(market_data, "provider"),
@@ -55,6 +68,10 @@ def load_config(path: str | Path) -> AppConfig:
         raise ValueError("mode must be paper or live")
     if config.market_data_provider != "webull":
         raise ValueError("market_data.provider must be webull")
+    if not isinstance(config.strategy_config.get("target_qty"), int):
+        raise ValueError("strategy.config.target_qty must be an integer")
+    if any(not isinstance(rule, str) for rule in config.risk_rule_order):
+        raise ValueError("risk.rules must be a list of strings")
     return config
 
 

@@ -9,9 +9,13 @@ python -m runners.run_strategy
 
 The runner has no trade-defining CLI arguments. It loads symbols, strategy parameters, risk limits, paths, mode, and order settings from YAML; secrets come from environment variables. The execution order is always `market data -> strategy -> intent -> risk gate -> SQLite journal -> broker`. In paper mode, the broker fills immediately; repeated target intents become no-ops once the target position is reached.
 
+Strategies are loaded through a registry (`strategies/registry.py`) and receive their own `strategy.config` block from YAML.
+
 ## Development
 
 Set `TRADEFRAME_CONFIG` to a YAML file, export the Webull credentials from `.env.example`, and run `python -m runners.run_strategy`. Cron should invoke that module without trade arguments. Run `python -m compileall -q config core execution reconciliation strategies runners tests`. Install the test extra with `python -m pip install -e '.[test]'`, then run `python -m pytest`.
+
+To flatten positions manually, run `python -m runners.run_flatten --confirm`.
 
 ## Webull integration status
 

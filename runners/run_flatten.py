@@ -1,3 +1,4 @@
+import sys
 from time import perf_counter
 from uuid import uuid4
 
@@ -6,23 +7,26 @@ from observability.notifier import alert
 from runners.runtime import build_runtime
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    argv = argv or sys.argv[1:]
+    if "--confirm" not in argv:
+        print("Refusing to flatten positions without --confirm.")
+        return 2
     logger = configure_logging()
     run_id = str(uuid4())
     started = perf_counter()
-    logger.info("run_started", extra={"run_id": run_id, "extra_payload": {"runner": "strategy"}})
+    logger.warning("flatten_started", extra={"run_id": run_id, "extra_payload": {"runner": "flatten"}})
     try:
-        orders = build_runtime().strategy_cycle()
+        orders = build_runtime().flatten_cycle()
     except Exception as exc:
-        logger.error("run_failed", extra={"run_id": run_id, "extra_payload": {"runner": "strategy", "error": str(exc)}})
-        alert(f"strategy run failed: {exc}", level="error")
+        logger.error("flatten_failed", extra={"run_id": run_id, "extra_payload": {"error": str(exc)}})
+        alert(f"flatten run failed: {exc}", level="error")
         return 1
-    logger.info(
-        "run_completed",
+    logger.warning(
+        "flatten_completed",
         extra={
             "run_id": run_id,
             "extra_payload": {
-                "runner": "strategy",
                 "orders_attempted": len(orders),
                 "duration_seconds": round(perf_counter() - started, 3),
             },

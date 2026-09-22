@@ -25,8 +25,3 @@ class Broker(ABC):
 class MarketDataProvider(ABC):
     @abstractmethod
     def get_snapshot(self, symbols: list[str]) -> MarketSnapshot: ...
-
-
-class MarketDataProvider(ABC):
-    @abstractmethod
-    def get_prices(self, symbols: list[str]) -> dict[str, float]: ...

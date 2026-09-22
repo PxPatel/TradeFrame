@@ -11,6 +11,12 @@ def alert(message: str, level: str = "info") -> bool:
         return False
     prefixes = {"info": "INFO", "warning": "WARNING", "error": "ERROR"}
     payload = json.dumps({"chat_id": chat_id, "text": f"[{prefixes.get(level, 'INFO')}] {message}"}).encode()
-    request.urlopen(request.Request(f"https://api.telegram.org/bot{token}/sendMessage",
-                                    data=payload, headers={"Content-Type": "application/json"}), timeout=5)
+    request.urlopen(
+        request.Request(
+            f"https://api.telegram.org/bot{token}/sendMessage",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+        ),
+        timeout=5,
+    )
     return True

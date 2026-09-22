@@ -26,4 +26,4 @@ def test_reconciliation_detects_local_only_open_order(tmp_path):
 
     mismatches = Reconciler(PaperBroker({"AAPL": 100.0}), store).run()
 
-    assert any(item.kind == "order" and item.severity == "high" for item in mismatches)
+    assert any(item.kind == "order_local_only" and item.severity == "high" for item in mismatches)
