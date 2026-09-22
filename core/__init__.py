@@ -1,0 +1,1 @@
+"""Broker-agnostic trading domain logic."""

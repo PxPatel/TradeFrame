@@ -1,0 +1,1 @@
+"""Strategy plug-ins that emit intents and never call a broker."""
