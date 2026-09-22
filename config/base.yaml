@@ -2,28 +2,28 @@ mode: paper
 symbol_allowlist: [AAPL, MSFT, SPY]
 
 runtime:
-	database_path: data/trading.db
-	kill_switch_path: data/KILL_SWITCH
+  database_path: data/trading.db
+  kill_switch_path: data/KILL_SWITCH
 
 strategy:
-	name: example_slow_swing
-	target_qty: 1
+  name: example_slow_swing
+  target_qty: 1
 
 risk:
-	max_orders_per_day: 6
-	max_position_notional: 5000
-	daily_loss_limit: 200
-	max_order_qty: 1000
+  max_orders_per_day: 6
+  max_position_notional: 5000
+  daily_loss_limit: 200
+  max_order_qty: 1000
 
 execution:
-	order_type: MKT
-	time_in_force: DAY
-	entrust_type: QTY
+  order_type: MKT
+  time_in_force: DAY
+  entrust_type: QTY
 
 broker:
-	region: us
-	market: US
+  region: us
+  market: US
 
 market_data:
-	provider: webull
-	paper_fill_price: null
+  provider: webull
+  paper_fill_price: null
